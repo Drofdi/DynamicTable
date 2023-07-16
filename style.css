@@ -1,0 +1,44 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+
+.table{
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.table__body{
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+
+thead th{
+    padding: 10px;
+    border: 1px solid black;
+    position: relative;
+}
+
+tbody td{
+    padding: 10px;
+    border: 1px solid black;
+    text-align: center;
+}
+
+.changerSize{
+    position: absolute;
+    top: 0;
+    right: -4.5px;
+    bottom: 0;
+    width: 6px;
+    cursor: col-resize;
+    border: 1px solid red;
+    z-index: 1;
+}
+
+
+
