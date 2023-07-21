@@ -4,6 +4,34 @@ const tableBodyHead = document.querySelector('.table__body__head')
 const tableBody = document.querySelector('.table__body')
 const dragbleTh = document.querySelector('.dragbleTh')
 const tableBodyContent = document.querySelector('.table__body__body')
+const tableHeadRow = document.querySelector('.table__body__head__row')
+
+
+
+function addDatasOnTable(columnsInTable, rowsInBody){
+  const resizbleDiv = '<div class="changerSize" contenteditable="false"></div>'
+  for (let i = 0; i < columnsInTable; i++){
+    let thColumnsInRowHead = document.createElement('th')
+    tableHeadRow.appendChild(thColumnsInRowHead)
+    thColumnsInRowHead.innerHTML = i + resizbleDiv
+    thColumnsInRowHead.setAttribute('contenteditable', 'true')
+  }
+
+  for (let i = 0; i < rowsInBody; i++){
+    let trRowInBodyTable = document.createElement('tr')
+    tableBodyContent.appendChild(trRowInBodyTable)
+      for(let j = 0; j < columnsInTable; j++){
+        let tdColumnsInRowBody = document.createElement('td')
+        trRowInBodyTable.appendChild(tdColumnsInRowBody)
+        tdColumnsInRowBody.innerHTML = j
+        tdColumnsInRowBody.setAttribute('contenteditable', 'true')
+      }
+  }
+}
+
+addDatasOnTable(5,4)
+
+
 
 tableBodyHead.addEventListener('mousedown', startResize)
 document.addEventListener('mousemove', moveResize)
@@ -13,7 +41,7 @@ tableBodyHead.addEventListener('mouseover', changeStyleResizbleBorder)
 tableBodyHead.addEventListener('mouseout', removeStyleResizbleBorder)
 
 
-dragbleTh.addEventListener('mousedown', startDrag)
+/* dragbleTh.addEventListener('mousedown', startDrag) */
 
 let xStartDrag
 let xEndDrag
