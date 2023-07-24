@@ -2,20 +2,28 @@
 
 const tableBodyHead = document.querySelector('.table__body__head')
 const tableBody = document.querySelector('.table__body')
-const dragbleTh = document.querySelector('.dragbleTh')
+
 const tableBodyContent = document.querySelector('.table__body__body')
 const tableHeadRow = document.querySelector('.table__body__head__row')
 
-
+const focusBackColor = 'rgb(214, 241, 173)'
+const resizbleDiv = '<div class="changerSize" contenteditable="false"></div>'
 
 function addDatasOnTable(columnsInTable, rowsInBody){
-  const resizbleDiv = '<div class="changerSize" contenteditable="false"></div>'
   for (let i = 0; i < columnsInTable; i++){
     let thColumnsInRowHead = document.createElement('th')
     tableHeadRow.appendChild(thColumnsInRowHead)
-    thColumnsInRowHead.innerHTML = i + resizbleDiv
-    thColumnsInRowHead.setAttribute('contenteditable', 'true')
+
+    let thContent = document.createElement('span')
+    thColumnsInRowHead.appendChild(thContent)
+    thContent.classList.add('thContent')
+    thContent.setAttribute('contenteditable', 'true')
+
+    thContent.innerHTML = i
+    thColumnsInRowHead.insertAdjacentHTML('beforeend', resizbleDiv);
   }
+
+
 
   for (let i = 0; i < rowsInBody; i++){
     let trRowInBodyTable = document.createElement('tr')
@@ -31,6 +39,20 @@ function addDatasOnTable(columnsInTable, rowsInBody){
 
 addDatasOnTable(5,4)
 
+const thContents = document.querySelectorAll('.thContent')
+
+for(let thElem of thContents){
+  thElem.addEventListener('focus',changeBackColorFocus)
+  thElem.addEventListener('blur',changeBackColorBlur)
+}
+
+function changeBackColorFocus(){
+  this.parentElement.style.backgroundColor = focusBackColor
+}
+
+function changeBackColorBlur(){
+  this.parentElement.style.backgroundColor = tableBody.style.backgroundColor
+}
 
 
 tableBodyHead.addEventListener('mousedown', startResize)
@@ -40,16 +62,33 @@ document.addEventListener('mouseup', stopResize)
 tableBodyHead.addEventListener('mouseover', changeStyleResizbleBorder)
 tableBodyHead.addEventListener('mouseout', removeStyleResizbleBorder)
 
+//dragble
 
-/* dragbleTh.addEventListener('mousedown', startDrag) */
+
+
+
+
+
 
 let xStartDrag
 let xEndDrag
 let isDragNow = false
-let columdIndex
+let columnIndex
+
+let thS = document.querySelectorAll('th')
+thS[1].classList.add('dragbleTh')
+
+/* for(let thElem of thS){
+  thElem.classList.add('dragbleTh')
+} */
+
+
+const dragbleTh = document.querySelector('.dragbleTh')
+dragbleTh.addEventListener('mousedown', startDrag)
 
 function startDrag(event){
   if(event.target === this){
+    console.log('th')
     isDragNow = true
     tableBody.style.userSelect = 'none'
     xStartDrag = event.clientX
@@ -61,11 +100,22 @@ function startDrag(event){
 function moveDrag(event){
   if (isDragNow){
     xEndDrag = event.clientX
-    tableBody.style.userSelect = 'auto'
+
   }
 }
 
-console.log(Array.from(tableBodyHead.getElementsByTagName('th')).indexOf(dragbleTh))
+function endDrag(){
+  tableBody.style.userSelect = 'auto'
+  if (xStartDrag < xEndDrag){
+    columnIndex = thS.indexOf(dragbleTh)
+    console.log(columnIndex)
+  }
+}
+
+
+
+
+/* console.log(Array.from(tableBodyHead.getElementsByTagName('th')).indexOf(dragbleTh))
 
 function endDrag() {
   if (xStartDrag < xEndDrag) {
@@ -78,10 +128,24 @@ function endDrag() {
     });
   }
   isDragNow = false
-}
+} */
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+//resize
 
 let xStartResize
 let isResizeNow = false
@@ -129,66 +193,6 @@ function removeStyleResizbleBorder(event){
 
 
 
-
-
-
-
-
-/* const tableBodyHead = document.querySelector('.table__body__head')
-const tableBody = document.querySelector('.table__body')
-
-tableBodyHead.addEventListener('mousedown', startResize)
-document.addEventListener('mousemove', moveResize)
-document.addEventListener('mouseup', stopResize)
-
-
-tableBodyHead.addEventListener('mouseover', changeStyleResizbleBorder)
-tableBodyHead.addEventListener('mouseout', removeStyleResizbleBorder)
-
-
-let xStart
-let isResizeNow = false
-let widthNow
-let currentTarget
-
-function startResize(event){
-  let targetElement = event.target
-  if (targetElement.classList.contains('changerSize')){
-    tableBody.style.userSelect = 'none'
-    isResizeNow = true
-    xStart = event.clientX
-    widthNow = parseInt(getComputedStyle(targetElement.parentElement).width, 10)
-    currentTarget = targetElement.parentElement
-  }
-}
-
-function moveResize(event) {
-  if (isResizeNow) {
-    let width = widthNow + event.clientX - xStart
-    currentTarget.style.width = width + 'px'
-  }
-}
-
-function stopResize() {
-  isResizeNow = false
-  tableBody.style.userSelect = 'auto'
-  window.removeEventListener('mousemove', moveResize)
-  window.removeEventListener('mouseup', stopResize)
-}
-
-function changeStyleResizbleBorder(event){
-  let targetElement = event.target
-  if (targetElement.classList.contains('changerSize')){
-    targetElement.parentElement.style.borderRight = '1px solid blue'
-  }
-}
-
-function removeStyleResizbleBorder(event){
-  let targetElement = event.target
-  if (targetElement.classList.contains('changerSize')){
-    targetElement.parentElement.style.borderRight = tableBody.style.border
-  }
-} */
 
 
 

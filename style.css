@@ -21,22 +21,26 @@
 .table__body{
     border: 1px solid black;
     border-collapse: collapse;
+    background-color: rgb(255, 255, 255); 
 }
 
 
 thead th{
+    height: 2rem;
     padding: 10px;
     border: 1px solid black;
     position: relative;
 }
 
 tbody td{
+    height: 2rem;
     padding: 10px;
     border: 1px solid black;
     text-align: center;
 }
 
 .changerSize{
+    display: block;
     position: absolute;
     top: 0;
     right: -4.5px;
@@ -45,6 +49,21 @@ tbody td{
     cursor: col-resize;
     border: 1px solid red;
     z-index: 1;
+}
+
+[contenteditable="true"]:focus{
+    outline: 0px solid blue; 
+/*     background-color: lightyellow;  */
+}
+
+.thContent {
+/*     display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%; */
 }
 
 
