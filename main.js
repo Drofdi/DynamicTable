@@ -76,24 +76,23 @@ let isDragNow = false
 let columnIndex
 
 let thS = document.querySelectorAll('th')
-thS[1].classList.add('dragbleTh')
+/* thS[1].classList.add('dragbleTh') */
 
-/* for(let thElem of thS){
+for(let thElem of thS){
+  thElem.addEventListener('mousedown', startDrag)
   thElem.classList.add('dragbleTh')
-} */
-
-
-const dragbleTh = document.querySelector('.dragbleTh')
-dragbleTh.addEventListener('mousedown', startDrag)
+}
 
 function startDrag(event){
-  if(event.target === this){
+  if(event.target === this && this.classList.contains('dragbleTh')){
+    columnIndex = Array.from(thS).indexOf(this)
+    console.log(columnIndex)
     console.log('th')
     isDragNow = true
     tableBody.style.userSelect = 'none'
     xStartDrag = event.clientX
-    dragbleTh.addEventListener('mousemove', moveDrag)
-    dragbleTh.addEventListener('mouseup', endDrag)
+    this.addEventListener('mousemove', moveDrag)
+    this.addEventListener('mouseup', endDrag)
   }
 }
 
@@ -101,38 +100,26 @@ function moveDrag(event){
   if (isDragNow){
     xEndDrag = event.clientX
 
+    tableBody.style.userSelect = 'auto'
   }
 }
 
 function endDrag(){
-  tableBody.style.userSelect = 'auto'
+  let trsBody = Array.from(tableBodyContent.querySelectorAll('tr'))
+
   if (xStartDrag < xEndDrag){
-    columnIndex = thS.indexOf(dragbleTh)
-    console.log(columnIndex)
-  }
-}
+    thS[columnIndex + 1].insertAdjacentElement('afterend', thS[columnIndex])
 
+    for(let tr of trsBody){
+      let cells = Array.from(tr.querySelectorAll('td'))
 
-
-
-/* console.log(Array.from(tableBodyHead.getElementsByTagName('th')).indexOf(dragbleTh))
-
-function endDrag() {
-  if (xStartDrag < xEndDrag) {
-    const columnIndex = Array.from(tableBodyHead.getElementsByTagName('th')).indexOf(dragbleTh) // здесь можно использовать вместо indexOf(dragbleTh) например indexOf(CeurrentTarget через event таргер и отдельную переменную)
-    const rows = Array.from(tableBodyContent.getElementsByTagName('tr'))
-    dragbleTh.remove()
-    rows.forEach((row) => {
-      const cells = Array.from(row.getElementsByTagName('td'))
-      cells[columnIndex].remove()
-    });
+      cells[columnIndex + 1].insertAdjacentElement('afterend', cells[columnIndex])
+    }
   }
   isDragNow = false
-} */
-
-
-
-
+  this.removeEventListener('mousemove', moveDrag)
+  this.removeEventListener('mouseup', endDrag)
+}
 
 
 
