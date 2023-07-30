@@ -18,7 +18,7 @@
     min-height: 100vh;
 }
 
-.table__body{
+.table__main{
     border: 1px solid black;
     border-collapse: collapse;
     background-color: rgb(255, 255, 255); 
@@ -47,7 +47,6 @@ tbody td{
     bottom: 0;
     width: 6px;
     cursor: col-resize;
-    border: 1px solid red;
     z-index: 1;
 }
 
