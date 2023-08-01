@@ -70,6 +70,7 @@ tableBodyHead.addEventListener('mouseout', removeStyleResizbleBorder)
 
 
 
+
 let xStartDrag
 let xEndDrag
 let isDragNow = false
@@ -97,54 +98,163 @@ function startDrag(event){
 function moveDrag(event){
   if (isDragNow){
     xEndDrag = event.clientX
-
-    tableBody.style.userSelect = 'auto'
   }
 }
 
-function endDrag(event) {
-  if (isDragNow) {
-    let trsBody = Array.from(tableBodyContent.querySelectorAll('tr'))
-    let newColumnIndex = getColumnIndexAfterDrop(event.clientX)
+let columns = Array.from(tableHeadRow.querySelectorAll('th'))
 
-    if (columnIndex !== newColumnIndex) {
-      let columns = Array.from(tableHeadRow.querySelectorAll('th'))
-      let columnToMove = columns.splice(columnIndex, 1)[0]
-      columns.splice(newColumnIndex, 0, columnToMove)
+function endDrag(){
+  if (isDragNow){
+    let newColumnIndex = getColumnIndexAfterMouseUp(xEndDrag)
+      if (columnIndex !== newColumnIndex){
 
-      for (let tr of trsBody) {
-        let cells = Array.from(tr.querySelectorAll('td'))
-        let cellToMove = cells.splice(columnIndex, 1)[0]
-        cells.splice(newColumnIndex, 0, cellToMove)
-
-        for (let i = 0; i < cells.length; i++) {
-          tr.appendChild(cells[i])
-        }
+        tableHeadRow.insertBefore(columns[columnIndex],columns[newColumnIndex])
+        console.log(columnIndex)
+        console.log(newColumnIndex)
       }
 
-      for (let i = 0; i < columns.length; i++) {
-        tableHeadRow.appendChild(columns[i])
-      }
-    }
+      isDragNow = false
+      tableBody.style.userSelect = 'auto'
+      window.removeEventListener('mousemove', moveDrag)
+      window.removeEventListener('mouseup', endDrag)
   }
-
-  isDragNow = false
-  this.removeEventListener('mousemove', moveDrag)
-  this.removeEventListener('mouseup', endDrag)
 }
 
-function getColumnIndexAfterDrop(mouseX) {
-  let columns = Array.from(tableHeadRow.querySelectorAll('th'))
+function getColumnIndexAfterMouseUp(mouseX){
   let newColumnIndex = columnIndex
-
-  for (let i = 0; i < columns.length; i++) {
-    if (mouseX > columns[i].getBoundingClientRect().left + columns[i].getBoundingClientRect().width / 2) {
-      newColumnIndex = i + 1
+  for (let i = 0; i < columns.length; i++){
+    if (mouseX < columns[i].getBoundingClientRect().left + columns[i].getBoundingClientRect().width){
+      newColumnIndex = i
+      break
     }
   }
-
   return newColumnIndex
 }
+
+
+// function endDrag(event) {
+//   if (isDragNow) {
+//     let trsBody = Array.from(tableBodyContent.querySelectorAll('tr'))
+//     let newColumnIndex = getColumnIndexAfterDrop(event.clientX)
+
+//     if (columnIndex !== newColumnIndex) {
+//       let columns = Array.from(tableHeadRow.querySelectorAll('th'))
+//       let columnToMove = columns.splice(columnIndex, 1)[0]
+//       columns.splice(newColumnIndex, 0, columnToMove)
+
+//       for (let tr of trsBody) {
+//         let cells = Array.from(tr.querySelectorAll('td'))
+//         let cellToMove = cells.splice(columnIndex, 1)[0]
+//         cells.splice(newColumnIndex, 0, cellToMove)
+
+//         for (let i = 0; i < cells.length; i++) {
+//           tr.appendChild(cells[i])
+//         }
+//       }
+
+//       for (let i = 0; i < columns.length; i++) {
+//         tableHeadRow.appendChild(columns[i])
+//       }
+//     }
+//   }
+
+//   isDragNow = false
+//   window.removeEventListener('mousemove', moveDrag)
+//   window.removeEventListener('mouseup', endDrag)
+// }
+
+// function getColumnIndexAfterDrop(mouseX) {
+//   let columns = Array.from(tableHeadRow.querySelectorAll('th'));
+//   let newColumnIndex = columnIndex;
+
+//   for (let i = 0; i < columns.length; i++) {
+//     if (mouseX < columns[i].getBoundingClientRect().left + columns[i].getBoundingClientRect().width) {
+//       newColumnIndex = i;
+//       break;
+//     }
+//   }
+
+//   return newColumnIndex;
+// }
+
+
+
+
+// let xStartDrag
+// let xEndDrag
+// let isDragNow = false
+// let columnIndex
+
+// let thS = document.querySelectorAll('th')
+// /* thS[1].classList.add('dragbleTh') */
+
+// for(let thElem of thS){
+//   thElem.addEventListener('mousedown', startDrag)
+//   thElem.classList.add('dragbleTh')
+// }
+
+// function startDrag(event){
+//   if(event.target === this && this.classList.contains('dragbleTh')){
+//     columnIndex = Array.from(thS).indexOf(this)
+//     isDragNow = true
+//     tableBody.style.userSelect = 'none'
+//     xStartDrag = event.clientX
+//     window.addEventListener('mousemove', moveDrag)
+//     window.addEventListener('mouseup', endDrag)
+//   }
+// }
+
+// function moveDrag(event){
+//   if (isDragNow){
+//     xEndDrag = event.clientX
+
+//     tableBody.style.userSelect = 'auto'
+//   }
+// }
+
+// function endDrag(event) {
+//   if (isDragNow) {
+//     let trsBody = Array.from(tableBodyContent.querySelectorAll('tr'))
+//     let newColumnIndex = getColumnIndexAfterDrop(event.clientX)
+
+//     if (columnIndex !== newColumnIndex) {
+//       let columns = Array.from(tableHeadRow.querySelectorAll('th'))
+//       let columnToMove = columns.splice(columnIndex, 1)[0]
+//       columns.splice(newColumnIndex, 0, columnToMove)
+
+//       for (let tr of trsBody) {
+//         let cells = Array.from(tr.querySelectorAll('td'))
+//         let cellToMove = cells.splice(columnIndex, 1)[0]
+//         cells.splice(newColumnIndex, 0, cellToMove)
+
+//         for (let i = 0; i < cells.length; i++) {
+//           tr.appendChild(cells[i])
+//         }
+//       }
+
+//       for (let i = 0; i < columns.length; i++) {
+//         tableHeadRow.appendChild(columns[i])
+//       }
+//     }
+//   }
+
+//   isDragNow = false
+//   this.removeEventListener('mousemove', moveDrag)
+//   this.removeEventListener('mouseup', endDrag)
+// }
+
+// function getColumnIndexAfterDrop(mouseX) {
+//   let columns = Array.from(tableHeadRow.querySelectorAll('th'))
+//   let newColumnIndex = columnIndex
+
+//   for (let i = 0; i < columns.length; i++) {
+//     if (mouseX > columns[i].getBoundingClientRect().left + columns[i].getBoundingClientRect().width / 2) {
+//       newColumnIndex = i + 1
+//     }
+//   }
+
+//   return newColumnIndex
+// }
 
 
 

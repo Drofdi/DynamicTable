@@ -3,19 +3,12 @@
     margin: 0;
 }
 
-
-.testDiv{
-    width: 100px;
-    height: 100px;
-    border: 1px solid black;
-}
-
-
 .table{
     display: flex;
     justify-content: start;
     align-items: center;
     min-height: 100vh;
+    margin-left: 30%;
 }
 
 .table__main{
