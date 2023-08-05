@@ -101,16 +101,26 @@ function moveDrag(event){
   }
 }
 
-let columns = Array.from(tableHeadRow.querySelectorAll('th'))
 
+let columnsHead = tableHeadRow.querySelectorAll('th')
 function endDrag(){
   if (isDragNow){
     let newColumnIndex = getColumnIndexAfterMouseUp(xEndDrag)
+    let rowsBody = tableBodyContent.querySelectorAll('tr')
       if (columnIndex !== newColumnIndex){
+        let tempHeadColumnInner = columnsHead[columnIndex].innerHTML
+        columnsHead[columnIndex].innerHTML = columnsHead[newColumnIndex].innerHTML
+        columnsHead[newColumnIndex].innerHTML = tempHeadColumnInner
 
-        tableHeadRow.insertBefore(columns[columnIndex],columns[newColumnIndex])
-        console.log(columnIndex)
-        console.log(newColumnIndex)
+          for(let row of rowsBody){
+            let columnsBody = row.querySelectorAll('td')
+
+            let tempBodyColumnInner = columnsBody[columnIndex].innerHTML
+            columnsBody[columnIndex].innerHTML = columnsBody[newColumnIndex].innerHTML
+            columnsBody[newColumnIndex].innerHTML = tempBodyColumnInner
+          }
+
+
       }
 
       isDragNow = false
@@ -120,10 +130,38 @@ function endDrag(){
   }
 }
 
+
+//       // Получаем все строки таблицы
+//       const rows = document.querySelectorAll('.table__main__body tr');
+
+//       // Перебираем каждую строку и обмениваем столбцы
+//       for (const row of rows) {
+//         const columns = row.querySelectorAll('td');
+
+//         // Обмен столбцов
+//         const temp = columns[columnIndex].innerHTML;
+//         columns[columnIndex].innerHTML = columns[newColumnIndex].innerHTML;
+//         columns[newColumnIndex].innerHTML = temp;
+//       }
+
+//       // Теперь перемещаем столбцы в заголовке таблицы
+//       const headers = document.querySelectorAll('.table__main__head__row th');
+//       const tempHeader = headers[columnIndex].innerHTML;
+//       headers[columnIndex].innerHTML = headers[newColumnIndex].innerHTML;
+//       headers[newColumnIndex].innerHTML = tempHeader;
+//     }
+
+//     isDragNow = false;
+//     tableBody.style.userSelect = 'auto';
+//     window.removeEventListener('mousemove', moveDrag);
+//     window.removeEventListener('mouseup', endDrag);
+//   }
+// } */
+
 function getColumnIndexAfterMouseUp(mouseX){
   let newColumnIndex = columnIndex
-  for (let i = 0; i < columns.length; i++){
-    if (mouseX < columns[i].getBoundingClientRect().left + columns[i].getBoundingClientRect().width){
+  for (let i = 0; i < columnsHead.length; i++){
+    if (mouseX < columnsHead[i].getBoundingClientRect().left + columnsHead[i].getBoundingClientRect().width){
       newColumnIndex = i
       break
     }
