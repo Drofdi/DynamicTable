@@ -22,9 +22,6 @@ function addDatasOnTable(columnsInTable, rowsInBody){
     thContent.innerHTML = i
     thColumnsInRowHead.insertAdjacentHTML('beforeend', resizbleDiv);
   }
-
-
-
   for (let i = 0; i < rowsInBody; i++){
     let trRowInBodyTable = document.createElement('tr')
     tableBodyContent.appendChild(trRowInBodyTable)
@@ -39,20 +36,24 @@ function addDatasOnTable(columnsInTable, rowsInBody){
 
 addDatasOnTable(5,4)
 
-const thContents = document.querySelectorAll('.thContent')
 
-for(let thElem of thContents){
-  thElem.addEventListener('focus',changeBackColorFocus)
-  thElem.addEventListener('blur',changeBackColorBlur)
-}
+function addFocusStyleTh(){
+  let thContents = document.querySelectorAll('.thContent')
 
-function changeBackColorFocus(){
-  this.parentElement.style.backgroundColor = focusBackColor
+  for(let thElem of thContents){
+    thElem.addEventListener('focus',changeBackColorFocus)
+    thElem.addEventListener('blur',changeBackColorBlur)
+  }
+  
+  function changeBackColorFocus(){
+    this.parentElement.style.backgroundColor = focusBackColor
+  }
+  
+  function changeBackColorBlur(){
+    this.parentElement.style.backgroundColor = tableBody.style.backgroundColor
+  }
 }
-
-function changeBackColorBlur(){
-  this.parentElement.style.backgroundColor = tableBody.style.backgroundColor
-}
+addFocusStyleTh()
 
 
 tableBodyHead.addEventListener('mousedown', startResize)
@@ -66,18 +67,13 @@ tableBodyHead.addEventListener('mouseout', removeStyleResizbleBorder)
 
 
 
-
-
-
-
-
 let xStartDrag
 let xEndDrag
 let isDragNow = false
 let columnIndex
+let currentDraggedDiv = null;
 
 let thS = document.querySelectorAll('th')
-/* thS[1].classList.add('dragbleTh') */
 
 for(let thElem of thS){
   thElem.addEventListener('mousedown', startDrag)
@@ -85,7 +81,15 @@ for(let thElem of thS){
 }
 
 function startDrag(event){
+  let thS = document.querySelectorAll('th')
   if(event.target === this && this.classList.contains('dragbleTh')){
+
+    currentDraggedDiv = event.target.cloneNode(true)
+    currentDraggedDiv.style.position = 'fixed'
+    currentDraggedDiv.style.opacity = '0.5'
+    currentDraggedDiv.style.pointerEvents = 'none'
+    document.body.appendChild(currentDraggedDiv)
+
     columnIndex = Array.from(thS).indexOf(this)
     isDragNow = true
     tableBody.style.userSelect = 'none'
@@ -97,32 +101,53 @@ function startDrag(event){
 
 function moveDrag(event){
   if (isDragNow){
+    currentDraggedDiv.style.left = event.clientX - currentDraggedDiv.offsetWidth / 2 + 'px';
+    currentDraggedDiv.style.top = event.clientY - currentDraggedDiv.offsetHeight / 2 + 'px';
     xEndDrag = event.clientX
   }
 }
 
 
-let columnsHead = tableHeadRow.querySelectorAll('th')
 function endDrag(){
+  let columnsHead = tableHeadRow.querySelectorAll('th')
   if (isDragNow){
     let newColumnIndex = getColumnIndexAfterMouseUp(xEndDrag)
     let rowsBody = tableBodyContent.querySelectorAll('tr')
       if (columnIndex !== newColumnIndex){
-        let tempHeadColumnInner = columnsHead[columnIndex].innerHTML
-        columnsHead[columnIndex].innerHTML = columnsHead[newColumnIndex].innerHTML
-        columnsHead[newColumnIndex].innerHTML = tempHeadColumnInner
+        console.log(columnIndex)
+        console.log(newColumnIndex)
+        let newTh = document.createElement('th')
+        newTh.addEventListener('mousedown', startDrag)
+        newTh.classList.add('dragbleTh')
+        newTh.innerHTML = columnsHead[columnIndex].innerHTML
+
+        if(columnIndex < newColumnIndex){
+          columnsHead[newColumnIndex].insertAdjacentElement('afterend', newTh)
+          columnsHead[columnIndex].remove()
+        }
+        if(columnIndex > newColumnIndex){
+          columnsHead[newColumnIndex].insertAdjacentElement('beforebegin', newTh)
+          columnsHead[columnIndex].remove()
+        }
 
           for(let row of rowsBody){
             let columnsBody = row.querySelectorAll('td')
+            let newTd = document.createElement('td')
+            newTd.innerHTML = columnsBody[columnIndex].innerHTML
 
-            let tempBodyColumnInner = columnsBody[columnIndex].innerHTML
-            columnsBody[columnIndex].innerHTML = columnsBody[newColumnIndex].innerHTML
-            columnsBody[newColumnIndex].innerHTML = tempBodyColumnInner
+            if(columnIndex < newColumnIndex){
+              columnsBody[newColumnIndex].insertAdjacentElement('afterend', newTd)
+              columnsBody[columnIndex].remove()
+            }
+            if(columnIndex > newColumnIndex){
+              columnsBody[newColumnIndex].insertAdjacentElement('beforebegin', newTd)
+              columnsBody[columnIndex].remove()
+            }            
           }
-
-
+          addFocusStyleTh()
       }
-
+      currentDraggedDiv.remove();
+      currentDraggedDiv = null;
       isDragNow = false
       tableBody.style.userSelect = 'auto'
       window.removeEventListener('mousemove', moveDrag)
@@ -131,34 +156,8 @@ function endDrag(){
 }
 
 
-//       // Получаем все строки таблицы
-//       const rows = document.querySelectorAll('.table__main__body tr');
-
-//       // Перебираем каждую строку и обмениваем столбцы
-//       for (const row of rows) {
-//         const columns = row.querySelectorAll('td');
-
-//         // Обмен столбцов
-//         const temp = columns[columnIndex].innerHTML;
-//         columns[columnIndex].innerHTML = columns[newColumnIndex].innerHTML;
-//         columns[newColumnIndex].innerHTML = temp;
-//       }
-
-//       // Теперь перемещаем столбцы в заголовке таблицы
-//       const headers = document.querySelectorAll('.table__main__head__row th');
-//       const tempHeader = headers[columnIndex].innerHTML;
-//       headers[columnIndex].innerHTML = headers[newColumnIndex].innerHTML;
-//       headers[newColumnIndex].innerHTML = tempHeader;
-//     }
-
-//     isDragNow = false;
-//     tableBody.style.userSelect = 'auto';
-//     window.removeEventListener('mousemove', moveDrag);
-//     window.removeEventListener('mouseup', endDrag);
-//   }
-// } */
-
 function getColumnIndexAfterMouseUp(mouseX){
+  let columnsHead = tableHeadRow.querySelectorAll('th')
   let newColumnIndex = columnIndex
   for (let i = 0; i < columnsHead.length; i++){
     if (mouseX < columnsHead[i].getBoundingClientRect().left + columnsHead[i].getBoundingClientRect().width){
@@ -168,140 +167,6 @@ function getColumnIndexAfterMouseUp(mouseX){
   }
   return newColumnIndex
 }
-
-
-// function endDrag(event) {
-//   if (isDragNow) {
-//     let trsBody = Array.from(tableBodyContent.querySelectorAll('tr'))
-//     let newColumnIndex = getColumnIndexAfterDrop(event.clientX)
-
-//     if (columnIndex !== newColumnIndex) {
-//       let columns = Array.from(tableHeadRow.querySelectorAll('th'))
-//       let columnToMove = columns.splice(columnIndex, 1)[0]
-//       columns.splice(newColumnIndex, 0, columnToMove)
-
-//       for (let tr of trsBody) {
-//         let cells = Array.from(tr.querySelectorAll('td'))
-//         let cellToMove = cells.splice(columnIndex, 1)[0]
-//         cells.splice(newColumnIndex, 0, cellToMove)
-
-//         for (let i = 0; i < cells.length; i++) {
-//           tr.appendChild(cells[i])
-//         }
-//       }
-
-//       for (let i = 0; i < columns.length; i++) {
-//         tableHeadRow.appendChild(columns[i])
-//       }
-//     }
-//   }
-
-//   isDragNow = false
-//   window.removeEventListener('mousemove', moveDrag)
-//   window.removeEventListener('mouseup', endDrag)
-// }
-
-// function getColumnIndexAfterDrop(mouseX) {
-//   let columns = Array.from(tableHeadRow.querySelectorAll('th'));
-//   let newColumnIndex = columnIndex;
-
-//   for (let i = 0; i < columns.length; i++) {
-//     if (mouseX < columns[i].getBoundingClientRect().left + columns[i].getBoundingClientRect().width) {
-//       newColumnIndex = i;
-//       break;
-//     }
-//   }
-
-//   return newColumnIndex;
-// }
-
-
-
-
-// let xStartDrag
-// let xEndDrag
-// let isDragNow = false
-// let columnIndex
-
-// let thS = document.querySelectorAll('th')
-// /* thS[1].classList.add('dragbleTh') */
-
-// for(let thElem of thS){
-//   thElem.addEventListener('mousedown', startDrag)
-//   thElem.classList.add('dragbleTh')
-// }
-
-// function startDrag(event){
-//   if(event.target === this && this.classList.contains('dragbleTh')){
-//     columnIndex = Array.from(thS).indexOf(this)
-//     isDragNow = true
-//     tableBody.style.userSelect = 'none'
-//     xStartDrag = event.clientX
-//     window.addEventListener('mousemove', moveDrag)
-//     window.addEventListener('mouseup', endDrag)
-//   }
-// }
-
-// function moveDrag(event){
-//   if (isDragNow){
-//     xEndDrag = event.clientX
-
-//     tableBody.style.userSelect = 'auto'
-//   }
-// }
-
-// function endDrag(event) {
-//   if (isDragNow) {
-//     let trsBody = Array.from(tableBodyContent.querySelectorAll('tr'))
-//     let newColumnIndex = getColumnIndexAfterDrop(event.clientX)
-
-//     if (columnIndex !== newColumnIndex) {
-//       let columns = Array.from(tableHeadRow.querySelectorAll('th'))
-//       let columnToMove = columns.splice(columnIndex, 1)[0]
-//       columns.splice(newColumnIndex, 0, columnToMove)
-
-//       for (let tr of trsBody) {
-//         let cells = Array.from(tr.querySelectorAll('td'))
-//         let cellToMove = cells.splice(columnIndex, 1)[0]
-//         cells.splice(newColumnIndex, 0, cellToMove)
-
-//         for (let i = 0; i < cells.length; i++) {
-//           tr.appendChild(cells[i])
-//         }
-//       }
-
-//       for (let i = 0; i < columns.length; i++) {
-//         tableHeadRow.appendChild(columns[i])
-//       }
-//     }
-//   }
-
-//   isDragNow = false
-//   this.removeEventListener('mousemove', moveDrag)
-//   this.removeEventListener('mouseup', endDrag)
-// }
-
-// function getColumnIndexAfterDrop(mouseX) {
-//   let columns = Array.from(tableHeadRow.querySelectorAll('th'))
-//   let newColumnIndex = columnIndex
-
-//   for (let i = 0; i < columns.length; i++) {
-//     if (mouseX > columns[i].getBoundingClientRect().left + columns[i].getBoundingClientRect().width / 2) {
-//       newColumnIndex = i + 1
-//     }
-//   }
-
-//   return newColumnIndex
-// }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -350,14 +215,4 @@ function removeStyleResizbleBorder(event){
     targetElement.parentElement.style.borderRight = tableBody.style.border
   }
 }
-
-
-
-
-
-
-
-
-
-
 
