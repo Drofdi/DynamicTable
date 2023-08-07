@@ -9,6 +9,7 @@ const tableBodyContent = document.querySelector('.table__main__body')
 const tableHeadRow = document.querySelector('.table__main__head__row')
 
 const focusBackColor = 'rgb(214, 241, 173)'
+const dragbleHoverElem = 'grey'
 const resizbleDiv = '<div class="changerSize" contenteditable="false"></div>'
 
 function addDatasOnTable(columnsInTable, rowsInBody){
@@ -69,6 +70,14 @@ tableBodyHead.addEventListener('mouseout', removeStyleResizbleBorder)
 
 
 
+
+
+
+
+
+
+
+
 let xStartDrag
 let xEndDrag
 let isDragNow = false
@@ -82,8 +91,25 @@ for(let thElem of thSMain){
   thElem.classList.add('dragbleTh')
 }
 
+function addStyleHoverDragMain(){
+  let thSForDrag = document.querySelectorAll('th')
+  for (let column of thSForDrag){
+    column.addEventListener('mouseover', addHoverDraggedColumn)
+    column.addEventListener('mouseout', removeHoverDragColumn)
+  }
+}
+
+function removeStyleHoverDragMain(){
+  let thSForDrag = document.querySelectorAll('th')
+  for (let column of thSForDrag){
+    column.style.backgroundColor = tableBody.style.backgroundColor
+    column.removeEventListener('mouseover', addHoverDraggedColumn)
+    column.removeEventListener('mouseout', removeHoverDragColumn)
+  }
+}
+
 function addHoverDraggedColumn(){
-  this.style.backgroundColor = 'grey'
+  this.style.backgroundColor = dragbleHoverElem
 }
 function removeHoverDragColumn(){
     this.style.backgroundColor = tableBody.style.backgroundColor
@@ -92,11 +118,8 @@ function removeHoverDragColumn(){
 function startDrag(event){
   let thS = document.querySelectorAll('th')
   if(event.target === this && this.classList.contains('dragbleTh')){
-    for (let column of thSMain){
-      column.addEventListener('mouseover', addHoverDraggedColumn)
-      column.addEventListener('mouseout', removeHoverDragColumn)
-    }
 
+    addStyleHoverDragMain()
 
     currentDraggedDiv = event.target.cloneNode(true)
     currentDraggedDiv.style.position = 'fixed'
@@ -121,13 +144,6 @@ function moveDrag(event){
     xEndDrag = event.clientX
 }
 }
-
-
-
-
-
-
-
 
 function endDrag(event){
   if(xStartDrag !== xEndDrag){
@@ -181,11 +197,8 @@ function endDrag(event){
         tableBody.style.userSelect = 'auto'
         window.removeEventListener('mousemove', moveDrag)
         window.removeEventListener('mouseup', endDrag)
-        for (let column of thSMain){
-          column.style.backgroundColor = tableBody.style.backgroundColor
-          column.removeEventListener('mouseover', addHoverDraggedColumn)
-          column.removeEventListener('mouseout', removeHoverDragColumn)
-        }
+
+        removeStyleHoverDragMain()
 }
 
 
