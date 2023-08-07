@@ -1,5 +1,7 @@
 "use strict";
 
+
+// привести код в порядок
 const tableBodyHead = document.querySelector('.table__main__head')
 const tableBody = document.querySelector('.table__main')
 
@@ -71,18 +73,30 @@ let xStartDrag
 let xEndDrag
 let isDragNow = false
 let columnIndex
-let currentDraggedDiv = null;
+let currentDraggedDiv = null
 
-let thS = document.querySelectorAll('th')
+let thSMain = document.querySelectorAll('th')
 
-for(let thElem of thS){
+for(let thElem of thSMain){
   thElem.addEventListener('mousedown', startDrag)
   thElem.classList.add('dragbleTh')
+}
+
+function addHoverDraggedColumn(){
+  this.style.backgroundColor = 'grey'
+}
+function removeHoverDragColumn(){
+    this.style.backgroundColor = tableBody.style.backgroundColor
 }
 
 function startDrag(event){
   let thS = document.querySelectorAll('th')
   if(event.target === this && this.classList.contains('dragbleTh')){
+    for (let column of thSMain){
+      column.addEventListener('mouseover', addHoverDraggedColumn)
+      column.addEventListener('mouseout', removeHoverDragColumn)
+    }
+
 
     currentDraggedDiv = event.target.cloneNode(true)
     currentDraggedDiv.style.position = 'fixed'
@@ -99,61 +113,81 @@ function startDrag(event){
   }
 }
 
+
 function moveDrag(event){
   if (isDragNow){
-    currentDraggedDiv.style.left = event.clientX - currentDraggedDiv.offsetWidth / 2 + 'px';
-    currentDraggedDiv.style.top = event.clientY - currentDraggedDiv.offsetHeight / 2 + 'px';
+    currentDraggedDiv.style.left = event.clientX - currentDraggedDiv.offsetWidth / 2 + 'px'
+    currentDraggedDiv.style.top = event.clientY - currentDraggedDiv.offsetHeight / 2 + 'px'
     xEndDrag = event.clientX
-  }
+}
 }
 
 
-function endDrag(){
-  let columnsHead = tableHeadRow.querySelectorAll('th')
-  if (isDragNow){
-    let newColumnIndex = getColumnIndexAfterMouseUp(xEndDrag)
-    let rowsBody = tableBodyContent.querySelectorAll('tr')
-      if (columnIndex !== newColumnIndex){
-        console.log(columnIndex)
-        console.log(newColumnIndex)
-        let newTh = document.createElement('th')
-        newTh.addEventListener('mousedown', startDrag)
-        newTh.classList.add('dragbleTh')
-        newTh.innerHTML = columnsHead[columnIndex].innerHTML
 
-        if(columnIndex < newColumnIndex){
-          columnsHead[newColumnIndex].insertAdjacentElement('afterend', newTh)
-          columnsHead[columnIndex].remove()
-        }
-        if(columnIndex > newColumnIndex){
-          columnsHead[newColumnIndex].insertAdjacentElement('beforebegin', newTh)
-          columnsHead[columnIndex].remove()
-        }
 
-          for(let row of rowsBody){
-            let columnsBody = row.querySelectorAll('td')
-            let newTd = document.createElement('td')
-            newTd.innerHTML = columnsBody[columnIndex].innerHTML
 
-            if(columnIndex < newColumnIndex){
-              columnsBody[newColumnIndex].insertAdjacentElement('afterend', newTd)
-              columnsBody[columnIndex].remove()
-            }
-            if(columnIndex > newColumnIndex){
-              columnsBody[newColumnIndex].insertAdjacentElement('beforebegin', newTd)
-              columnsBody[columnIndex].remove()
-            }            
+
+
+
+function endDrag(event){
+  if(xStartDrag !== xEndDrag){
+    let columnsHead = tableHeadRow.querySelectorAll('th')
+    
+    if (isDragNow){
+      xEndDrag = event.clientX   
+/*       console.log(xStartDrag)
+      console.log(xEndDrag) */
+      let newColumnIndex = getColumnIndexAfterMouseUp(xEndDrag)
+      let rowsBody = tableBodyContent.querySelectorAll('tr')
+
+        if (columnIndex !== newColumnIndex){
+          let newTh = document.createElement('th')
+          newTh.addEventListener('mousedown', startDrag)
+          newTh.classList.add('dragbleTh')
+          newTh.style.width = columnsHead[columnIndex].style.width
+          newTh.innerHTML = columnsHead[columnIndex].innerHTML
+
+          if(columnIndex < newColumnIndex){
+            columnsHead[newColumnIndex].insertAdjacentElement('afterend', newTh)
+            columnsHead[columnIndex].remove()
           }
-          addFocusStyleTh()
+          if(columnIndex > newColumnIndex){
+            columnsHead[newColumnIndex].insertAdjacentElement('beforebegin', newTh)
+            columnsHead[columnIndex].remove()
+          }
+
+            for(let row of rowsBody){
+              let columnsBody = row.querySelectorAll('td')
+              let newTd = document.createElement('td')
+              newTd.innerHTML = columnsBody[columnIndex].innerHTML
+              newTd.setAttribute('contenteditable', 'true')
+              if(columnIndex < newColumnIndex){
+                columnsBody[newColumnIndex].insertAdjacentElement('afterend', newTd)
+                columnsBody[columnIndex].remove()
+              }
+              if(columnIndex > newColumnIndex){
+                columnsBody[newColumnIndex].insertAdjacentElement('beforebegin', newTd)
+                columnsBody[columnIndex].remove()
+              }            
+            }
+            addFocusStyleTh()
+        }
       }
-      currentDraggedDiv.remove();
-      currentDraggedDiv = null;
-      isDragNow = false
-      tableBody.style.userSelect = 'auto'
-      window.removeEventListener('mousemove', moveDrag)
-      window.removeEventListener('mouseup', endDrag)
-  }
+    }
+
+        currentDraggedDiv.remove();
+        currentDraggedDiv = null;
+        isDragNow = false
+        tableBody.style.userSelect = 'auto'
+        window.removeEventListener('mousemove', moveDrag)
+        window.removeEventListener('mouseup', endDrag)
+        for (let column of thSMain){
+          column.style.backgroundColor = tableBody.style.backgroundColor
+          column.removeEventListener('mouseover', addHoverDraggedColumn)
+          column.removeEventListener('mouseout', removeHoverDragColumn)
+        }
 }
+
 
 
 function getColumnIndexAfterMouseUp(mouseX){
@@ -167,6 +201,17 @@ function getColumnIndexAfterMouseUp(mouseX){
   }
   return newColumnIndex
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -215,4 +260,3 @@ function removeStyleResizbleBorder(event){
     targetElement.parentElement.style.borderRight = tableBody.style.border
   }
 }
-
