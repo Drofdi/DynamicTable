@@ -14,7 +14,7 @@ class AddDatasOnTableService{
     this.selectorsTable = selectorsTable
     this.resizbleDiv = '<div class="changerSize" contenteditable="false"></div>'
 
-    this.addDatasOnTable(5,4)
+    this.addDatasOnTable(6,5)
   }
 
   addDatasOnTable(columnsInTable, rowsInBody){
@@ -65,11 +65,11 @@ class AddFocusStyleForThs{
   }
 
   changeBackColorFocus(event){
-/*     event.target.parentElement.style.backgroundColor = this.focusBackColor */
+    event.target.parentElement.style.backgroundColor = this.focusBackColor
     }
     
   changeBackColorBlur(event){
-/*     event.target.parentElement.style.backgroundColor = this.selectorsTable.tableBody.style.backgroundColor */
+    event.target.parentElement.style.backgroundColor = this.selectorsTable.tableBody.style.backgroundColor
     }
 }
 
@@ -191,7 +191,8 @@ class MainDragService{
 
   startDrag(event){
     let thS = document.querySelectorAll('th')
-    if (event.currentTarget.classList.contains('dragbleTh')){ //ОШИБКА ВОЗМОЖНО ЗДЕСЬ
+/*     if (event.currentTarget.classList.contains('dragbleTh') && this.mainParamsDragColumns.thSMain.includes(event.currentTarget)){ */
+if (event.target.tagName === 'TH' && event.currentTarget.classList.contains('dragbleTh')){ //ОШИБКА ВОЗМОЖНО ЗДЕСЬ
       
       this.addOrRemoveStyleHoverDraggable.addStyleHoverDragSetEvent()
       this.mainParamsDragColumns.currentDraggedDiv = event.target.cloneNode(true)
@@ -232,7 +233,7 @@ class MainDragService{
             let newTh = document.createElement('th')
             newTh.addEventListener('mousedown', this.startDrag)
             newTh.classList.add('dragbleTh')
-            console.log(this.mainParamsDragColumns.columnIndex)
+/*             console.log(this.mainParamsDragColumns.columnIndex) */
             newTh.style.width = columnsHead[this.mainParamsDragColumns.columnIndex].style.width
             newTh.innerHTML = columnsHead[this.mainParamsDragColumns.columnIndex].innerHTML
   
