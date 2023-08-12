@@ -49,14 +49,10 @@ tbody td{
 /*     background-color: lightyellow;  */
 }
 
-.thContent {
-/*     display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%; */
+.sortButton{
+    background: none;
+    border: none;
+    font-size: 20px;
 }
 
 

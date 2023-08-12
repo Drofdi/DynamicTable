@@ -36,7 +36,7 @@ class AddDatasOnTableService{
         for(let j = 0; j < columnsInTable; j++){
           let tdColumnsInRowBody = document.createElement('td')
           trRowInBodyTable.appendChild(tdColumnsInRowBody)
-          tdColumnsInRowBody.innerHTML = j
+          tdColumnsInRowBody.innerHTML = j + i
           tdColumnsInRowBody.setAttribute('contenteditable', 'true')
         }
     }
@@ -191,8 +191,7 @@ class MainDragService{
 
   startDrag(event){
     let thS = document.querySelectorAll('th')
-/*     if (event.currentTarget.classList.contains('dragbleTh') && this.mainParamsDragColumns.thSMain.includes(event.currentTarget)){ */
-if (event.target.tagName === 'TH' && event.currentTarget.classList.contains('dragbleTh')){ //ОШИБКА ВОЗМОЖНО ЗДЕСЬ
+    if (event.target.tagName === 'TH' && event.currentTarget.classList.contains('dragbleTh')){
       
       this.addOrRemoveStyleHoverDraggable.addStyleHoverDragSetEvent()
       this.mainParamsDragColumns.currentDraggedDiv = event.target.cloneNode(true)
@@ -233,7 +232,6 @@ if (event.target.tagName === 'TH' && event.currentTarget.classList.contains('dra
             let newTh = document.createElement('th')
             newTh.addEventListener('mousedown', this.startDrag)
             newTh.classList.add('dragbleTh')
-/*             console.log(this.mainParamsDragColumns.columnIndex) */
             newTh.style.width = columnsHead[this.mainParamsDragColumns.columnIndex].style.width
             newTh.innerHTML = columnsHead[this.mainParamsDragColumns.columnIndex].innerHTML
   
@@ -292,12 +290,6 @@ if (event.target.tagName === 'TH' && event.currentTarget.classList.contains('dra
 
 //resize
 
-
-
-
-
-
-
 class MainParamsResizeColumns{
   constructor(){
     this.xStartResize
@@ -306,12 +298,6 @@ class MainParamsResizeColumns{
     this.currentTargetResize
   }
 }
-
-
-
-
-
-
 
 class MainResizeService{
   constructor(selectorsTable, mainParamsResizeColumns){
@@ -367,6 +353,60 @@ class MainResizeService{
 
 
 
+// SORT
+
+
+class SortMainParams{
+  constructor(){
+/*     this.column = button.getAttribute('data-column') */
+  }
+}
+
+//------------------------------
+
+class SortAddForColumns {
+  constructor(sortService) {
+    this.sortService = sortService
+    this.thsForSort = document.querySelectorAll('th')
+
+    this.addSortAndEvent();
+  }
+
+  addSortAndEvent() {
+    let sortButton = document.createElement('button')
+    sortButton.innerHTML = '↓'
+    sortButton.classList.add('sortButton')
+    sortButton.setAttribute('data-column', '0')
+    sortButton.addEventListener('click', () => {
+      this.sortService.sortUp()
+    })
+    this.thsForSort[0].append(sortButton)
+  }
+}
+
+//--------------------------
+
+class SortService {
+  constructor() {
+
+  }
+
+  sortUp() {
+    let tableBody = document.querySelector('.table__main__body')
+    let rows = Array.from(tableBody.querySelectorAll('tr'))
+    
+    rows.sort((rowA, rowB) => {
+      let valueA = parseInt(rowA.querySelector('td').innerText)
+      let valueB = parseInt(rowB.querySelector('td').innerText)
+      return valueB - valueA
+    });
+    
+    for (let row of rows) {
+      tableBody.appendChild(row)
+    }
+  }
+}
+
 
 
 const selectorsTable = new SelectorsTable()
@@ -379,3 +419,8 @@ const mainParamsResizeColumns = new MainParamsResizeColumns()
 const mainResizeService = new MainResizeService(selectorsTable,mainParamsResizeColumns)
 const setBasicsEvents = new SetBasicsEvents(selectorsTable,mainResizeService)
 const mainSetEventDragStart = new MainSetEventDragStart(mainParamsDragColumns, mainDragService)
+
+const sortMainParams = new SortMainParams()
+const sortService = new SortService()
+const sortAddForColumns = new SortAddForColumns(sortService)
+
